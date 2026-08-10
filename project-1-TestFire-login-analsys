@@ -1,1 +1,47 @@
+CYBERSECURITY LAB ANALYSIS : LOGIN PROCESS ANALYSIS & SECURITY ASSESSMENT
+TARGET APPLICATION : Altoro Mutual (testfire.net)
+FOCUS AREA : HTTP Request/Response Inspection, Session Management, and Cookie Lifecycle
+Abstract / Overview
+This project presents a hands-on cybersecurity assessment and technical breakdown of the authentication workflow on Altoro Mutual (testfire.net). Using browser-based developer tools, the HTTP request/response cycle, form payload parameters, session token generation (JSESSIONID, AltoroAccounts), and session termination behavior (logout mechanics) were captured, documented, and analyzed.
 
+Phase 1: Environment Setup & Traffic Capture
+
+1. Inspection Environment Configuration
+   Target Navigation: Launched Chrome Browser and initialized connection to [http://testfire.net](http://testfire.net).
+   Traffic Interception: Opened Chrome Developer Tools (F12) and navigated to the Network tab to ensure full capture of stateless HTTP transactions prior to submitting credentials.
+2. Authentication Attempt & Capture
+   Credential Submission: Inputted credentials into the web application's authentication interface.
+   POST Request Interception: Isolated the primary HTTP POST request mapped to the doLogin endpoint inside the Network transaction log.
+Phase 2: Request & Response Artifact Analysis
+
+1. General Request Metrics
+   Request URL: [http://testfire.net/doLogin](http://testfire.net/doLogin)
+   HTTP Method: POST
+   HTTP Status Code: 302 Found (Redirection to dashboard upon credential processing)
+2. Form Payload Extraction
+   Inspection of the Payload tab exposed cleartext key-value parameter pairs sent via the HTTP POST request:
+   uid (User ID / Username): jsmith
+   passw (Password): Demo1234
+3. Session Identification & Cookie Analysis
+   Inspection via the Application / Cookies tab revealed the creation and exchange of key session tokens:
+   JSESSIONID: A unique, server-generated session identifier used to map subsequent stateless HTTP requests to an active user session state.
+   AltoroAccounts: A custom application cookie specific to the Altoro Mutual testbed, used to store account-related session state data.
+Cookie Mechanics:
+   Request Cookies: Sent by the browser to the server on each subsequent request to maintain state.
+   Response Cookies: Sent by the server via Set-Cookie headers to establish or update tokens on the client browser.
+4. Session Termination (Logout Mechanics)
+   Pre-Logout State: Both Request and Response headers actively handle cookie values during session establishment and navigation.
+   Post-Logout State: Upon triggering the logout action, Set-Cookie response headers are absent in subsequent traffic because the server invalidates active session tokens rather than creating or renewing state identifiers.
+CORE THEORETICAL CONCEPTS & VERIFICATION
+1. Authentication vs. Authorization
+   Authentication: The process of verifying identity using supplied credentials (uid and passw).
+   Authorization: The process of granting access rights to restricted application endpoints based on the authenticated identity.
+2. Session State Management
+   Session: A server-side mechanism that maintains state across inherently stateless HTTP interactions.
+   Cookie: A client-side data store used by web browsers to persist session tokens across HTTP requests.
+3. Session Termination & Hygiene
+   Logout Verification: Executing a logout request invalidates the active JSESSIONID on the server, preventing unauthorized reuse or session replay attacks on protected endpoints.
+KEY FINDINGS & CONCLUSION
+   End-to-End Visibility: Successfully captured and documented the full login-to-logout lifecycle over HTTP.
+   Parameter Exposure: Captured raw POST data containing user credentials (uid, passw) and verified redirect behavior (302 Found).
+   Session Management: Confirmed proper token handling and server-side session destruction upon logout execution, maintaining session hygiene.
